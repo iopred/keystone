@@ -121,7 +121,7 @@ func (c *keystoneChannel) check() {
 	}
 }
 
-func (c *keystoneChannel) add(bot *bruxism.Bot, service bruxism.Service, message bruxism.Message, userName, query string) bool {
+func (c *keystoneChannel) add(bot *bruxism.Bot, service bruxism.Service, message bruxism.Message, query string) bool {
 	query = strings.ToLower(query)
 	for dungeonID, dungeon := range dungeons {
 		for _, alias := range dungeon.Aliases {
@@ -152,7 +152,7 @@ func (c *keystoneChannel) add(bot *bruxism.Bot, service bruxism.Service, message
 				}
 
 				c.Users[message.UserID()] = &keystone{
-					User:      userName,
+					User:      message.UserName(),
 					Dungeon:   dungeonID,
 					Level:     level,
 					Depleted:  depleted,
@@ -287,14 +287,6 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 	if !service.IsMe(message) {
 		messageChannel := message.Channel()
 
-		var userName string
-		discord, ok := service.(*bruxism.Discord)
-		if ok {
-			userName = discord.Nickname(message)
-		} else {
-			userName = message.UserName()
-		}
-
 		if bruxism.MatchesCommand(service, "start", message) || bruxism.MatchesCommand(service, "stop", message) {
 			if !service.IsBotOwner(message) && !service.IsModerator(message) {
 				service.SendMessage(messageChannel, "You must be a server admin to start tracking mythic keystones")
@@ -318,7 +310,7 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 
 			if bruxism.MatchesCommand(service, "set", message) {
 				query, parts := bruxism.ParseCommand(service, message)
-				if len(parts) > 1 && channel.add(bot, service, message, userName, query) {
+				if len(parts) > 1 && channel.add(bot, service, message, query) {
 					channel.list(bot, service, message)
 				} else {
 					service.SendMessage(messageChannel, "Invalid keystone. Eg: `keystone set hall of valor 3 sanguine`")
@@ -331,7 +323,7 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 					service.SendMessage(messageChannel, "You haven't set a keystone this week.")
 				} else {
 					keystone.Depleted = true
-					keystone.User = userName
+					keystone.User = message.UserName()
 					service.SendMessage(messageChannel, fmt.Sprintf("Keystone depleted: %s", keystone.String()))
 				}
 			} else if bruxism.MatchesCommand(service, "undeplete", message) {
@@ -340,7 +332,7 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 					service.SendMessage(messageChannel, "You haven't set a keystone this week.")
 				} else {
 					keystone.Depleted = false
-					keystone.User = userName
+					keystone.User = message.UserName()
 					service.SendMessage(messageChannel, fmt.Sprintf("Keystone undepleted: %s", keystone.String()))
 				}
 			}
