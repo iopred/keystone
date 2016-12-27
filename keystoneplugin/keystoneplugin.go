@@ -73,6 +73,7 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 
 type keystone struct {
 	User      string
+	Alt       string
 	Dungeon   keystoneDungeonID
 	Level     int
 	Depleted  bool
@@ -121,7 +122,7 @@ func (c *keystoneChannel) check() {
 	}
 }
 
-func (c *keystoneChannel) add(bot *bruxism.Bot, service bruxism.Service, message bruxism.Message, query string) bool {
+func (c *keystoneChannel) add(bot *bruxism.Bot, service bruxism.Service, message bruxism.Message, userID, alt, query string) bool {
 	query = strings.ToLower(query)
 	for dungeonID, dungeon := range dungeons {
 		for _, alias := range dungeon.Aliases {
@@ -151,8 +152,9 @@ func (c *keystoneChannel) add(bot *bruxism.Bot, service bruxism.Service, message
 					}
 				}
 
-				c.Users[message.UserID()] = &keystone{
+				c.Users[userID] = &keystone{
 					User:      message.UserName(),
+					Alt:       alt,
 					Dungeon:   dungeonID,
 					Level:     level,
 					Depleted:  depleted,
@@ -206,7 +208,12 @@ func (c *keystoneChannel) list(bot *bruxism.Bot, service bruxism.Service, messag
 			content += "\n"
 		}
 		content += keystone.String()
-		content += " - " + keystone.User
+
+		if keystone.Alt != "" {
+			content += " - " + keystone.Alt + " *(" + keystone.User + ")*"
+		} else {
+			content += " - " + keystone.User
+		}
 	}
 	service.SendMessage(message.Channel(), content)
 }
@@ -260,10 +267,12 @@ func (p *keystonePlugin) Help(bot *bruxism.Bot, service bruxism.Service, message
 
 	if p.Channels[message.Channel()] != nil {
 		help = append(help, []string{
+			bruxism.CommandHelp(service, "alt", "<alt name> <any other command>", fmt.Sprintf("Executes a command for an alt. Eg: %s%salt iopred set eoa 2%s", ticks, service.CommandPrefix(), ticks))[0],
 			bruxism.CommandHelp(service, "set", "<dungeon> <level> [modifiers]", fmt.Sprintf("Sets a keystone. Eg: %s%sset hov 5 teeming%s", ticks, service.CommandPrefix(), ticks))[0],
 			bruxism.CommandHelp(service, "list", "", "Lists all this weeks keystones.")[0],
 			bruxism.CommandHelp(service, "deplete", "", "Depletes your keystone")[0],
 			bruxism.CommandHelp(service, "undeplete", "", "Undepletes your keystone")[0],
+			bruxism.CommandHelp(service, "unset", "", "Unsets your keystone")[0],
 		}...)
 	}
 
@@ -308,32 +317,77 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 		} else if channel, ok := p.Channels[messageChannel]; ok {
 			channel.check()
 
-			if bruxism.MatchesCommand(service, "set", message) {
-				query, parts := bruxism.ParseCommand(service, message)
-				if len(parts) > 1 && channel.add(bot, service, message, query) {
+			alt := ""
+
+			messageMessage := strings.TrimSpace(message.Message())
+
+			lowerMessage := strings.ToLower(messageMessage)
+			lowerPrefix := strings.ToLower(service.CommandPrefix())
+
+			if !strings.HasPrefix(lowerMessage, lowerPrefix) {
+				return
+			}
+
+			messageMessage = messageMessage[len(lowerPrefix):]
+			parts := strings.Fields(messageMessage)
+
+			if len(parts) == 0 {
+				return
+			}
+
+			ticks := ""
+			if service.Name() == bruxism.DiscordServiceName {
+				ticks = "`"
+			}
+
+			userID := message.UserID()
+
+			if strings.ToLower(parts[0]) == "alt" {
+				if len(parts) == 1 {
+					service.SendMessage(messageChannel, fmt.Sprintf("Invalid alt command. Eg: %s%salt iopred set eye of azshara 9 depleted%s", ticks, service.CommandPrefix(), ticks))
+				} else {
+					alt = parts[1]
+					userID = strings.ToLower(alt) + "__" + userID
+					parts = parts[2:]
+				}
+			}
+
+			keystone := channel.Users[userID]
+
+			if strings.ToLower(parts[0]) == "set" {
+				if len(parts) > 2 && channel.add(bot, service, message, userID, alt, strings.Join(parts[1:], " ")) {
+					service.SendMessage(messageChannel, "Keystone set.")
 					channel.list(bot, service, message)
 				} else {
-					service.SendMessage(messageChannel, "Invalid keystone. Eg: `keystone set hall of valor 3 sanguine`")
+					service.SendMessage(messageChannel, fmt.Sprintf("Invalid keystone. Eg: %s%sset hall of valor 3 sanguine%s", ticks, service.CommandPrefix(), ticks))
 				}
-			} else if bruxism.MatchesCommand(service, "list", message) {
+			} else if strings.ToLower(parts[0]) == "unset" {
+				if keystone == nil {
+					service.SendMessage(messageChannel, "You haven't set a keystone this week.")
+				} else {
+					delete(channel.Users, userID)
+					service.SendMessage(messageChannel, "Keystone unset.")
+					channel.list(bot, service, message)
+				}
+			} else if strings.ToLower(parts[0]) == "list" {
 				channel.list(bot, service, message)
-			} else if bruxism.MatchesCommand(service, "deplete", message) {
-				keystone := channel.Users[message.UserID()]
+			} else if strings.ToLower(parts[0]) == "deplete" {
 				if keystone == nil {
 					service.SendMessage(messageChannel, "You haven't set a keystone this week.")
 				} else {
 					keystone.Depleted = true
 					keystone.User = message.UserName()
-					service.SendMessage(messageChannel, fmt.Sprintf("Keystone depleted: %s", keystone.String()))
+					service.SendMessage(messageChannel, "Keystone depleted.")
+					channel.list(bot, service, message)
 				}
-			} else if bruxism.MatchesCommand(service, "undeplete", message) {
-				keystone := channel.Users[message.UserID()]
+			} else if strings.ToLower(parts[0]) == "undeplete" {
 				if keystone == nil {
 					service.SendMessage(messageChannel, "You haven't set a keystone this week.")
 				} else {
 					keystone.Depleted = false
 					keystone.User = message.UserName()
-					service.SendMessage(messageChannel, fmt.Sprintf("Keystone undepleted: %s", keystone.String()))
+					service.SendMessage(messageChannel, "Keystone undepleted.")
+					channel.list(bot, service, message)
 				}
 			}
 		}
