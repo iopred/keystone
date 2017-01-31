@@ -345,6 +345,7 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 			if strings.ToLower(parts[0]) == "alt" {
 				if len(parts) <= 1 {
 					service.SendMessage(messageChannel, fmt.Sprintf("Invalid alt command. Eg: %s%salt iopred set eye of azshara 9 depleted%s", ticks, service.CommandPrefix(), ticks))
+					return
 				} else {
 					alt = parts[1]
 					userID = strings.ToLower(alt) + "__" + userID
