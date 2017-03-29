@@ -25,6 +25,16 @@ const (
 	NL
 	ARC
 	VOW
+	LKARA
+	UKARA
+	COEN
+)
+
+type region int
+
+const (
+	US = iota
+	EU
 )
 
 type keystoneDungeon struct {
@@ -69,6 +79,18 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 		Name:    "Vault of the Wardens",
 		Aliases: []string{"vault of the wardens", "vow", "vault", "warden", "wardens"},
 	},
+	LKARA: &keystoneDungeon{
+		Name:    "Lower Karazhan",
+		Aliases: []string{"lower karazhan", "lower kara", "lk", "lkara", "lower"},
+	},
+	UKARA: &keystoneDungeon{
+		Name:    "Upper Karazhan",
+		Aliases: []string{"upper karazhan", "upper kara", "uk", "ukara", "upper"},
+	},
+	COEN: &keystoneDungeon{
+		Name:    "Cathedral of Eternal Night",
+		Aliases: []string{"cathedral of eternal night", "coen", "cen", "cathedral", "cathedral of night", "cathedral eternal night", "eternal night"},
+	},
 }
 
 type keystone struct {
@@ -93,6 +115,7 @@ func (k *keystone) String() string {
 
 type keystoneChannel struct {
 	Users        map[string]*keystone
+	Region       region
 	LastModified time.Time
 }
 
@@ -116,8 +139,24 @@ func lastTuesday(t time.Time) time.Time {
 	return t
 }
 
+func lastWednesday(t time.Time) time.Time {
+	year, month, day := t.Date()
+	t = time.Date(year, month, day, 0, 0, 0, 0, location)
+	for t.Weekday() != time.Wednesday {
+		t = t.Add(-24 * time.Hour)
+	}
+
+	return t
+}
+
 func (c *keystoneChannel) check() {
-	if time.Now().After(lastTuesday(c.LastModified).Add(24 * 7 * time.Hour)) {
+	var lastReset time.Time
+	if c.Region == EU {
+		lastReset = lastWednesday(c.LastModified)
+	} else {
+		lastReset = lastTuesday(c.LastModified)
+	}
+	if time.Now().After(lastReset.Add(24 * 7 * time.Hour)) {
 		c.Users = map[string]*keystone{}
 	}
 }
@@ -258,6 +297,7 @@ func (p *keystonePlugin) Help(bot *bruxism.Bot, service bruxism.Service, message
 		} else {
 			help = append(help, bruxism.CommandHelp(service, "stop", "", "Stops keystone tracking in this channel.")[0])
 		}
+		help = append(help, bruxism.CommandHelp(service, "region", "<US|EU>", "Sets your region (default US)")[0])
 	}
 
 	ticks := ""
@@ -281,6 +321,7 @@ func (p *keystonePlugin) Help(bot *bruxism.Bot, service bruxism.Service, message
 			"Examples:",
 			fmt.Sprintf("%s%sset hov 5 teeming%s - Adds a Level 5 Halls of Valor keystone with teeming.", ticks, service.CommandPrefix(), ticks),
 			fmt.Sprintf("%s%sset eye of azshara 2 depleted%s - Adds a depleted Level 2 Eye of Azshara keystone.", ticks, service.CommandPrefix(), ticks),
+			fmt.Sprintf("%s%sregion EU%s - Sets the region to EU.", ticks, service.CommandPrefix(), ticks),
 		}...)
 	}
 
@@ -298,7 +339,7 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 
 		if bruxism.MatchesCommand(service, "start", message) || bruxism.MatchesCommand(service, "stop", message) {
 			if !service.IsBotOwner(message) && !service.IsModerator(message) {
-				service.SendMessage(messageChannel, "You must be a server admin to start tracking mythic keystones")
+				service.SendMessage(messageChannel, "You must be a server admin to start tracking mythic keystones.")
 				return
 			}
 
@@ -340,9 +381,28 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 				ticks = "`"
 			}
 
+			command := strings.ToLower(parts[0])
+
+			if command == "region" {
+				if !service.IsBotOwner(message) && !service.IsModerator(message) {
+					service.SendMessage(messageChannel, "You must be a server admin to change regions.")
+					return
+				}
+
+				if len(parts) > 1 && strings.ToLower(parts[1]) == "eu" {
+					channel.Region = EU
+					service.SendMessage(messageChannel, "Your region is now set to EU. Keystones will clear midnight Wednesday.")
+				} else {
+					channel.Region = US
+					service.SendMessage(messageChannel, "Your region is now set to US. Keystones will clear midnight Tuesday.")
+				}
+
+				return
+			}
+
 			userID := message.UserID()
 
-			if strings.ToLower(parts[0]) == "alt" {
+			if command == "alt" {
 				if len(parts) <= 1 {
 					service.SendMessage(messageChannel, fmt.Sprintf("Invalid alt command. Eg: %s%salt iopred set eye of azshara 9 depleted%s", ticks, service.CommandPrefix(), ticks))
 					return
@@ -355,14 +415,14 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 
 			keystone := channel.Users[userID]
 
-			if strings.ToLower(parts[0]) == "set" {
+			if command == "set" {
 				if len(parts) > 2 && channel.add(bot, service, message, userID, alt, strings.Join(parts[1:], " ")) {
 					service.SendMessage(messageChannel, "Keystone set.")
 					channel.list(bot, service, message)
 				} else {
 					service.SendMessage(messageChannel, fmt.Sprintf("Invalid keystone. Eg: %s%sset hall of valor 3 sanguine%s", ticks, service.CommandPrefix(), ticks))
 				}
-			} else if strings.ToLower(parts[0]) == "unset" {
+			} else if command == "unset" {
 				if keystone == nil {
 					service.SendMessage(messageChannel, "You haven't set a keystone this week.")
 				} else {
@@ -370,9 +430,9 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 					service.SendMessage(messageChannel, "Keystone unset.")
 					channel.list(bot, service, message)
 				}
-			} else if strings.ToLower(parts[0]) == "list" {
+			} else if command == "list" {
 				channel.list(bot, service, message)
-			} else if strings.ToLower(parts[0]) == "deplete" {
+			} else if command == "deplete" {
 				if keystone == nil {
 					service.SendMessage(messageChannel, "You haven't set a keystone this week.")
 				} else {
@@ -381,7 +441,7 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 					service.SendMessage(messageChannel, "Keystone depleted.")
 					channel.list(bot, service, message)
 				}
-			} else if strings.ToLower(parts[0]) == "undeplete" {
+			} else if command == "undeplete" {
 				if keystone == nil {
 					service.SendMessage(messageChannel, "You haven't set a keystone this week.")
 				} else {
