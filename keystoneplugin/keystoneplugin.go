@@ -410,6 +410,7 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 					alt = parts[1]
 					userID = strings.ToLower(alt) + "__" + userID
 					parts = parts[2:]
+					command = strings.ToLower(parts[0])
 				}
 			}
 
