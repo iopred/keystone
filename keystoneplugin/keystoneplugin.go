@@ -94,7 +94,7 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	},
 	SEAT: &keystoneDungeon{
 		Name:    "Seat of the Triumvirate",
-		Aliases: []string{"seat of the triumvirate", "seat", "set", "triumvirate", "seat of triumvirate", "seat the triumvirate"},
+		Aliases: []string{"seat of the triumvirate", "seat", "sott", "triumvirate", "seat of triumvirate", "seat the triumvirate"},
 	},
 }
 
