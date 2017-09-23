@@ -28,6 +28,7 @@ const (
 	LKARA
 	UKARA
 	COEN
+	SEAT
 )
 
 type region int
@@ -90,6 +91,10 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	COEN: &keystoneDungeon{
 		Name:    "Cathedral of Eternal Night",
 		Aliases: []string{"cathedral of eternal night", "coen", "cen", "cathedral", "cathedral of night", "cathedral eternal night", "eternal night"},
+	},
+	SEAT: &keystoneDungeon{
+		Name:    "Seat of the Triumvirate",
+		Aliases: []string{"seat of the triumvirate", "seat", "sott", "triumvirate", "seat of triumvirate", "seat the triumvirate"},
 	},
 }
 
