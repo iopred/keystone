@@ -29,6 +29,16 @@ const (
 	UKARA
 	COEN
 	SEAT
+	AD
+	FH
+	KR
+	SOTS
+	SOB
+	TOS
+	TM
+	UR
+	TD
+	WM
 )
 
 type region int
@@ -95,6 +105,46 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	SEAT: &keystoneDungeon{
 		Name:    "Seat of the Triumvirate",
 		Aliases: []string{"seat of the triumvirate", "seat", "sott", "triumvirate", "seat of triumvirate", "seat the triumvirate"},
+	},
+	AD: &keystoneDungeon {
+		Name:    "Atal'Dazar",
+		Aliases: []string{"ad", "atal"},
+	},
+	FH: &keystoneDungeon {
+		Name:    "Freehold",
+		Aliases: []string{"fh"},
+	},
+	KR: &keystoneDungeon {
+		Name:    "King's Rest",
+		Aliases: []string{"kr", "kings"},
+	},
+	SOTS: &keystoneDungeon {
+		Name:    "Shrine of the Storm",
+		Aliases: []string{"shrine", "sots"},
+	},
+	SOB: &keystoneDungeon {
+		Name:    "Siege of Boralus",
+		Aliases: []string{"sob", "siege", "boralus"},
+	},
+	TOS: &keystoneDungeon {
+		Name:    "Temple of Sethraliss",
+		Aliases: []string{"tos", "temple"},
+	},
+	TM: &keystoneDungeon {
+		Name:    "The MOTHERLODE!!",
+		Aliases: []string{"tm", "motherlode", "mother"},
+	},
+	UR: &keystoneDungeon {
+		Name:    "The Underrot",
+		Aliases: []string{"ur", "underrot"},
+	},
+	TD: &keystoneDungeon {
+		Name:    "Tol Dagor",
+		Aliases: []string{"td", "tol", "dagor"},
+	},
+	WM: &keystoneDungeon {
+		Name:    "Waycrest Manor",
+		Aliases: []string{"wm", "waycrest", "manor"},
 	},
 }
 
