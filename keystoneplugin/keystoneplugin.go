@@ -108,43 +108,43 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	},
 	AD: &keystoneDungeon {
 		Name:    "Atal'Dazar",
-		Aliases: []string{"ad", "atal"},
+		Aliases: []string{"ad", "atal", "atal'dazar", "ataldazar"},
 	},
 	FH: &keystoneDungeon {
 		Name:    "Freehold",
-		Aliases: []string{"fh"},
+		Aliases: []string{"fh", "freehold"},
 	},
 	KR: &keystoneDungeon {
 		Name:    "King's Rest",
-		Aliases: []string{"kr", "kings"},
+		Aliases: []string{"kr", "kings", "kings rest", "king's rest"},
 	},
 	SOTS: &keystoneDungeon {
 		Name:    "Shrine of the Storm",
-		Aliases: []string{"shrine", "sots"},
+		Aliases: []string{"shrine", "sots", "shrine of the storm"},
 	},
 	SOB: &keystoneDungeon {
 		Name:    "Siege of Boralus",
-		Aliases: []string{"sob", "siege", "boralus"},
+		Aliases: []string{"sob", "siege", "boralus", "siege of boralus"},
 	},
 	TOS: &keystoneDungeon {
 		Name:    "Temple of Sethraliss",
-		Aliases: []string{"tos", "temple"},
+		Aliases: []string{"tos", "temple", "temple of sethraliss", "sethraliss"},
 	},
 	TM: &keystoneDungeon {
 		Name:    "The MOTHERLODE!!",
-		Aliases: []string{"tm", "motherlode", "mother"},
+		Aliases: []string{"tm", "motherlode", "mother", "the motherlode"},
 	},
 	UR: &keystoneDungeon {
 		Name:    "The Underrot",
-		Aliases: []string{"ur", "underrot"},
+		Aliases: []string{"ur", "underrot", "the underrot"},
 	},
 	TD: &keystoneDungeon {
 		Name:    "Tol Dagor",
-		Aliases: []string{"td", "tol", "dagor"},
+		Aliases: []string{"td", "tol", "dagor", "tol dagor"},
 	},
 	WM: &keystoneDungeon {
 		Name:    "Waycrest Manor",
-		Aliases: []string{"wm", "waycrest", "manor"},
+		Aliases: []string{"wm", "waycrest", "manor", "waycrest manor"},
 	},
 }
 
