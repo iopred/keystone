@@ -39,6 +39,8 @@ const (
 	UR
 	TD
 	WM
+	OMJ
+	OMW
 )
 
 type region int
@@ -145,6 +147,14 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	WM: &keystoneDungeon {
 		Name:    "Waycrest Manor",
 		Aliases: []string{"wm", "waycrest", "manor", "waycrest manor"},
+	},
+	OMJ: &keystoneDungeon {
+		Name:    "Operation: Mechagon - Junkyard",
+		Aliases: []string{"omj", "operation junkyard", "mechagon junkyard", "lower mecha"},
+	},
+	OMW: &keystoneDungeon {
+		Name:    "Operation: Mechagon - Workshop",
+		Aliases: []string{"omw", "operation workshop", "mechagon workshop", "upper mecha"},
 	},
 }
 
