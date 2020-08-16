@@ -134,7 +134,7 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	},
 	TM: &keystoneDungeon {
 		Name:    "The MOTHERLODE!!",
-		Aliases: []string{"tm", "motherlode", "mother", "the motherlode"},
+		Aliases: []string{"tm", "motherlode", "mother", "the motherlode", "ml"},
 	},
 	UR: &keystoneDungeon {
 		Name:    "The Underrot",
@@ -150,11 +150,11 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	},
 	OMJ: &keystoneDungeon {
 		Name:    "Operation: Mechagon - Junkyard",
-		Aliases: []string{"omj", "operation junkyard", "mechagon junkyard", "lower mecha"},
+		Aliases: []string{"omj", "operation junkyard", "mechagon junkyard", "lower mecha", "junk", "yard", "junkyard"},
 	},
 	OMW: &keystoneDungeon {
 		Name:    "Operation: Mechagon - Workshop",
-		Aliases: []string{"omw", "operation workshop", "mechagon workshop", "upper mecha"},
+		Aliases: []string{"omw", "operation workshop", "mechagon workshop", "upper mecha", "work", "workshop"},
 	},
 }
 
