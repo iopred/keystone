@@ -47,6 +47,7 @@ const (
 	SD
 	PF
 	SOA
+	TNW
 	TOP
 )
 
@@ -186,6 +187,10 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	SOA: &keystoneDungeon {
 		Name:    "Spires of Ascension",
 		Aliases: []string{"soa", "spires", "ascension", "spires of ascension"},
+	},
+	TNW: &keystoneDungeon {
+		Name:    "The Necrotic Wake",
+		Aliases: []string{"tnw", "nw", "necrotic wake", "the necrotic wake"},
 	},
 	TOP: &keystoneDungeon {
 		Name:    "Theatre of Pain",
