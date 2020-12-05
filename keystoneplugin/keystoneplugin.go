@@ -41,6 +41,14 @@ const (
 	WM
 	OMJ
 	OMW
+	DOS
+	MOTS
+	HOA
+	SD
+	PF
+	SOA
+	TNW
+	TOP
 )
 
 type region int
@@ -74,7 +82,7 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	},
 	HOV: &keystoneDungeon{
 		Name:    "Halls of Valor",
-		Aliases: []string{"halls of valor", "hall of valor", "hov", "halls"},
+		Aliases: []string{"halls of valor", "hall of valor", "hov"},
 	},
 	MOS: &keystoneDungeon{
 		Name:    "Maw of Souls",
@@ -155,6 +163,38 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	OMW: &keystoneDungeon {
 		Name:    "Operation: Mechagon - Workshop",
 		Aliases: []string{"omw", "operation workshop", "mechagon workshop", "upper mecha", "work", "workshop"},
+	},
+	DOS: &keystoneDungeon {
+		Name:    "De other Side",
+		Aliases: []string{"dos", "de other side", "the other side", "other side"},
+	},
+	MOTS: &keystoneDungeon {
+		Name:    "Mists of Tirna Scithe",
+		Aliases: []string{"mots", "mts", "mists", "mists of tirna scithe", "tirna", "scithe", "tirna scithe"},
+	},
+	HOA: &keystoneDungeon {
+		Name:    "Halls of Atonement",
+		Aliases: []string{"hoa", "halls", "halls of atonement", "atonement"},
+	},
+	SD: &keystoneDungeon {
+		Name:    "Sanguine Depths",
+		Aliases: []string{"sd", "sanguine depths"},
+	},
+	PF: &keystoneDungeon {
+		Name:    "Plaguefall",
+		Aliases: []string{"pf", "plaguefall", "plague"},
+	},
+	SOA: &keystoneDungeon {
+		Name:    "Spires of Ascension",
+		Aliases: []string{"soa", "spires", "ascension", "spires of ascension"},
+	},
+	TNW: &keystoneDungeon {
+		Name:    "The Necrotic Wake",
+		Aliases: []string{"tnw", "nw", "necrotic wake", "the necrotic wake"},
+	},
+	TOP: &keystoneDungeon {
+		Name:    "Theatre of Pain",
+		Aliases: []string{"top", "theatre", "theatre of pain"},
 	},
 }
 
@@ -372,8 +412,8 @@ func (p *keystonePlugin) Help(bot *bruxism.Bot, service bruxism.Service, message
 
 	if p.Channels[message.Channel()] != nil {
 		help = append(help, []string{
-			bruxism.CommandHelp(service, "alt", "<alt name> <any other command>", fmt.Sprintf("Executes a command for an alt. Eg: %s%salt iopred set eoa 2%s", ticks, service.CommandPrefix(), ticks))[0],
-			bruxism.CommandHelp(service, "set", "<dungeon> <level> [modifiers]", fmt.Sprintf("Sets a keystone. Eg: %s%sset hov 5 teeming%s", ticks, service.CommandPrefix(), ticks))[0],
+			bruxism.CommandHelp(service, "alt", "<alt name> <any other command>", fmt.Sprintf("Executes a command for an alt. Eg: %s%salt iopred set soa 2%s", ticks, service.CommandPrefix(), ticks))[0],
+			bruxism.CommandHelp(service, "set", "<dungeon> <level> [modifiers]", fmt.Sprintf("Sets a keystone. Eg: %s%sset hoa 5 teeming%s", ticks, service.CommandPrefix(), ticks))[0],
 			bruxism.CommandHelp(service, "list", "", "Lists all this weeks keystones.")[0],
 			bruxism.CommandHelp(service, "deplete", "", "Depletes your keystone")[0],
 			bruxism.CommandHelp(service, "undeplete", "", "Undepletes your keystone")[0],
@@ -384,8 +424,8 @@ func (p *keystonePlugin) Help(bot *bruxism.Bot, service bruxism.Service, message
 	if detailed {
 		help = append(help, []string{
 			"Examples:",
-			fmt.Sprintf("%s%sset hov 5 teeming%s - Adds a Level 5 Halls of Valor keystone with teeming.", ticks, service.CommandPrefix(), ticks),
-			fmt.Sprintf("%s%sset eye of azshara 2 depleted%s - Adds a depleted Level 2 Eye of Azshara keystone.", ticks, service.CommandPrefix(), ticks),
+			fmt.Sprintf("%s%sset hoa 5 teeming%s - Adds a Level 5 Halls of Atonement keystone with teeming.", ticks, service.CommandPrefix(), ticks),
+			fmt.Sprintf("%s%sset de other side 2 depleted%s - Adds a depleted Level 2 De other Side keystone.", ticks, service.CommandPrefix(), ticks),
 			fmt.Sprintf("%s%sregion EU%s - Sets the region to EU.", ticks, service.CommandPrefix(), ticks),
 		}...)
 	}
@@ -469,7 +509,7 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 
 			if command == "alt" {
 				if len(parts) <= 1 {
-					service.SendMessage(messageChannel, fmt.Sprintf("Invalid alt command. Eg: %s%salt iopred set eye of azshara 9 depleted%s", ticks, service.CommandPrefix(), ticks))
+					service.SendMessage(messageChannel, fmt.Sprintf("Invalid alt command. Eg: %s%salt iopred set mists of tirna scithe 9 depleted%s", ticks, service.CommandPrefix(), ticks))
 					return
 				} else {
 					alt = parts[1]
@@ -486,7 +526,7 @@ func (p *keystonePlugin) Message(bot *bruxism.Bot, service bruxism.Service, mess
 					service.SendMessage(messageChannel, "Keystone set.")
 					channel.list(bot, service, message)
 				} else {
-					service.SendMessage(messageChannel, fmt.Sprintf("Invalid keystone. Eg: %s%sset hall of valor 3 sanguine%s", ticks, service.CommandPrefix(), ticks))
+					service.SendMessage(messageChannel, fmt.Sprintf("Invalid keystone. Eg: %s%sset mists of tirna scithe 3 sanguine%s", ticks, service.CommandPrefix(), ticks))
 				}
 			} else if command == "unset" {
 				if keystone == nil {
