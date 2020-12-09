@@ -194,7 +194,7 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	},
 	TOP: &keystoneDungeon {
 		Name:    "Theatre of Pain",
-		Aliases: []string{"top", "theatre", "theatre of pain"},
+		Aliases: []string{"top", "theatre", "theater", "theatre of pain", "theater of pain"},
 	},
 }
 
