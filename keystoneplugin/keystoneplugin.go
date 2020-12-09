@@ -165,7 +165,7 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 		Aliases: []string{"omw", "operation workshop", "mechagon workshop", "upper mecha", "work", "workshop"},
 	},
 	DOS: &keystoneDungeon {
-		Name:    "De other Side",
+		Name:    "De Other Side",
 		Aliases: []string{"dos", "de other side", "the other side", "other side"},
 	},
 	MOTS: &keystoneDungeon {
@@ -425,7 +425,7 @@ func (p *keystonePlugin) Help(bot *bruxism.Bot, service bruxism.Service, message
 		help = append(help, []string{
 			"Examples:",
 			fmt.Sprintf("%s%sset hoa 5 teeming%s - Adds a Level 5 Halls of Atonement keystone with teeming.", ticks, service.CommandPrefix(), ticks),
-			fmt.Sprintf("%s%sset de other side 2 depleted%s - Adds a depleted Level 2 De other Side keystone.", ticks, service.CommandPrefix(), ticks),
+			fmt.Sprintf("%s%sset de other side 2 depleted%s - Adds a depleted Level 2 De Other Side keystone.", ticks, service.CommandPrefix(), ticks),
 			fmt.Sprintf("%s%sregion EU%s - Sets the region to EU.", ticks, service.CommandPrefix(), ticks),
 		}...)
 	}
