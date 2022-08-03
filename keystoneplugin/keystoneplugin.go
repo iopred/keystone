@@ -49,6 +49,10 @@ const (
 	SOA
 	TNW
 	TOP
+	TSW
+	TSG
+	GRD
+	ID
 )
 
 type region int
@@ -195,6 +199,22 @@ var dungeons map[keystoneDungeonID]*keystoneDungeon = map[keystoneDungeonID]*key
 	TOP: &keystoneDungeon {
 		Name:    "Theatre of Pain",
 		Aliases: []string{"top", "theatre", "theater", "theatre of pain", "theater of pain"},
+	},
+	TSW: &keystoneDungeon {
+		Name:    "Tazavesh: Streets of Wonder",
+		Aliases: []string{"tsw", "tsow", "Streets of Wonder", "streets"},
+	},
+	TSG: &keystoneDungeon {
+		Name:    "Tazavesh: Solheah's Gambit",
+		Aliases: []string{"tsg", "soleah", "Solheah's Gambit", "gambit"},
+	},
+	GRD: &keystoneDungeon {
+		Name:    "Grimrail Depot",
+		Aliases: []string{"gd", "grimrail depot", "grimrail", "depot", "train"},
+	},
+	ID: &keystoneDungeon {
+		Name:    "Iron Docks",
+		Aliases: []string{"id", "iron docks", "docks", "boat"},
 	},
 }
 
